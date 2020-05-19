@@ -1,0 +1,123 @@
+MODULE = Audio::PulseAudio	PACKAGE = Audio::PulseAudio::SampleSpec
+
+PROTOTYPES: DISABLE
+
+pa_sample_spec *
+new_c( class, format, rate, channels )
+	const char *class
+	IV format
+	UV rate
+	UV channels
+	CODE:
+		pa_sample_spec ss = {
+			.format = format,
+			.rate = rate,
+			.channels = channels
+		};
+		RETVAL = &ss;
+	OUTPUT:
+		RETVAL
+
+IV
+format( self, ... )
+	pa_sample_spec *self 
+	CODE:
+		if ( items > 1 )
+			self->format = SvIV( ST(1) );
+		RETVAL = self->format;
+	OUTPUT:
+		RETVAL
+
+UV
+rate( self, ... )
+	pa_sample_spec *self 
+	CODE:
+		if ( items > 1 )
+			self->rate = SvUV( ST(1) );
+		RETVAL = self->rate;
+	OUTPUT:
+		RETVAL
+
+UV
+channels( self, ... )
+	pa_sample_spec *self 
+	CODE:
+		if ( items > 1 )
+			self->channels = SvUV( ST(1) );
+		RETVAL = self->channels;
+	OUTPUT:
+		RETVAL
+
+
+UV
+bytes_per_second( self )
+	pa_sample_spec *self
+	CODE:
+		RETVAL = pa_bytes_per_second( self );
+	OUTPUT:
+		RETVAL
+
+UV
+frame_size( self )
+	pa_sample_spec *self
+	CODE:
+		RETVAL = pa_frame_size( self );
+	OUTPUT:
+		RETVAL
+
+UV
+sample_size( self )
+	pa_sample_spec *self
+	CODE:
+		RETVAL = pa_sample_size( self );
+	OUTPUT:
+		RETVAL
+
+UV
+bytes_to_usec( self, len )
+	pa_sample_spec *self
+	UV len
+	CODE:
+		RETVAL = pa_bytes_to_usec( len, self );
+	OUTPUT:
+		RETVAL
+
+UV
+usec_to_bytes( self, time )
+	pa_sample_spec *self
+	UV time
+	CODE:
+		RETVAL = pa_usec_to_bytes( time, self );
+	OUTPUT:
+		RETVAL
+
+IV
+valid( self )
+	pa_sample_spec *self
+	CODE:
+		RETVAL = pa_sample_spec_valid( self );
+	OUTPUT:
+		RETVAL
+
+IV
+equal( self, other )
+	pa_sample_spec *self
+	pa_sample_spec *other
+	CODE:
+		RETVAL = pa_sample_spec_equal( self, other );
+	OUTPUT:
+		RETVAL
+
+SV *
+snprint( self )
+	pa_sample_spec *self
+	CODE:
+		SV *dest = newSV( PA_SAMPLE_SPEC_SNPRINT_MAX );
+		char *d = SvPV_force( dest, PL_na );
+		pa_sample_spec_snprint( d, PA_SAMPLE_SPEC_SNPRINT_MAX, self );
+		SvCUR_set( dest, strlen( d ) );
+		RETVAL = dest;
+	OUTPUT:
+		RETVAL
+
+# vim: set ft=xs:

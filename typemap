@@ -1,0 +1,31 @@
+pa_simple*		T_PTROBJ
+pa_sample_spec*		T_DIRECT
+const pa_sample_spec*	T_DIRECT
+pa_channel_map*		T_PTROBJ
+const pa_channel_map*	T_PTROBJ
+pa_buffer_attr*		T_DIRECT
+const pa_buffer_attr*	T_DIRECT
+
+uint32_t		T_UV_MINUS
+
+INPUT
+
+T_PTROBJ
+	$var = ($type) ( SvROK($arg) ? (void *)SvIV( SvRV( $arg ) ) : NULL );
+
+T_DIRECT
+	$var = ($type) ( SvROK($arg) ? SvPV_nolen( (SV*) SvRV( $arg ) ) : NULL );
+
+T_PV
+	$var = ($type) ( SvOK( $arg ) ? SvPV_nolen($arg) : NULL );
+
+T_UV_MINUS
+	$var = ($type) ( SvOK( $arg ) ? SvUV( $arg ) : -1 );
+
+OUTPUT
+
+T_PTROBJ
+	sv_setref_pv($arg, class, (void*)$var);
+
+T_DIRECT
+	sv_setref_pvn( $arg, class, (char *)$var, sizeof( *$var ) );

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p gen
+grep -r '#define PA_[A-Z0-9_]\+ PA_'  /usr/include/pulse/ | sed 's/.*#define PA_/const_iv(/;s/ .*/),/' | sort -u > gen/const_iv.h

@@ -1,0 +1,75 @@
+MODULE = Audio::PulseAudio	PACKAGE = Audio::PulseAudio::BufferAttr
+
+PROTOTYPES: DISABLE
+
+pa_buffer_attr *
+new_c( class, maxlength = -1, tlength = -1, prebuf = -1, minreq = -1, fragsize = -1 )
+	const char *class
+	uint32_t maxlength
+	uint32_t tlength
+	uint32_t prebuf
+	uint32_t minreq
+	uint32_t fragsize
+	CODE:
+		pa_buffer_attr ba = {
+			.maxlength = maxlength,
+			.tlength = tlength,
+			.prebuf = prebuf,
+			.minreq = minreq,
+			.fragsize = fragsize
+		};
+		RETVAL = &ba;
+	OUTPUT:
+		RETVAL
+
+UV
+maxlength( self, ... )
+	pa_buffer_attr *self
+	CODE:
+		if ( items > 1 )
+			self->maxlength = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
+		RETVAL = self->maxlength;
+	OUTPUT:
+		RETVAL
+
+UV
+tlength( self, ... )
+	pa_buffer_attr *self
+	CODE:
+		if ( items > 1 )
+			self->tlength = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
+		RETVAL = self->tlength;
+	OUTPUT:
+		RETVAL
+
+UV
+prebuf( self, ... )
+	pa_buffer_attr *self
+	CODE:
+		if ( items > 1 )
+			self->prebuf = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
+		RETVAL = self->prebuf;
+	OUTPUT:
+		RETVAL
+
+UV
+minreq( self, ... )
+	pa_buffer_attr *self
+	CODE:
+		if ( items > 1 )
+			self->minreq = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
+		RETVAL = self->minreq;
+	OUTPUT:
+		RETVAL
+
+UV
+fragsize( self, ... )
+	pa_buffer_attr *self
+	CODE:
+		if ( items > 1 )
+			self->fragsize = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
+		RETVAL = self->fragsize;
+	OUTPUT:
+		RETVAL
+
+# vim: set ft=xs:

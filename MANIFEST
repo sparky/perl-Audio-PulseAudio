@@ -1,0 +1,14 @@
+MANIFEST
+Makefile.PL
+examples/simple-low-pass-filter.pl
+gen/const_iv.h
+h_extract
+lib/Audio/PulseAudio.pm
+lib/Audio/PulseAudio.xs
+lib/Audio/PulseAudio/BufferAttr.pm
+lib/Audio/PulseAudio/BufferAttr.xsi
+lib/Audio/PulseAudio/SampleSpec.pm
+lib/Audio/PulseAudio/SampleSpec.xsi
+lib/Audio/PulseAudio/Simple.pm
+lib/Audio/PulseAudio/Simple.xs
+typemap
