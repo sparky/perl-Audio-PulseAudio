@@ -10,7 +10,7 @@ WriteMakefile(
 	VERSION_FROM => 'lib/Audio/PulseAudio.pm',
 	XSMULTI      => 1,
 	OPTIMIZE     => '-O2 -gdwarf-2 -Wall -I.',
-	LIBS         => '-lpulse',
+	LIBS         => '-lpulse -lpthread',
 	XSBUILD      => {
 		xs => {
 			'lib/Audio/PulseAudio/Simple' => {

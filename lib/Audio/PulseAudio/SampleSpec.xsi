@@ -109,7 +109,7 @@ equal( self, other )
 		RETVAL
 
 SV *
-snprint( self )
+sprint( self )
 	pa_sample_spec *self
 	CODE:
 		SV *dest = newSV( PA_SAMPLE_SPEC_SNPRINT_MAX );
@@ -117,6 +117,101 @@ snprint( self )
 		pa_sample_spec_snprint( d, PA_SAMPLE_SPEC_SNPRINT_MAX, self );
 		SvCUR_set( dest, strlen( d ) );
 		RETVAL = dest;
+	OUTPUT:
+		RETVAL
+
+
+PROTOTYPES: ENABLE
+
+UV
+sample_size_of_format( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_size_of_format( format );
+	OUTPUT:
+		RETVAL
+
+SV *
+sample_format_valid( format )
+	UV format
+	CODE:
+		RETVAL = (pa_sample_format_valid( format ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+sample_rate_valid( rate )
+	UV rate
+	CODE:
+		RETVAL = (pa_sample_rate_valid( rate ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+channels_valid( channels )
+	UV channels
+	CODE:
+		RETVAL = (pa_channels_valid( channels ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+const char *
+sample_format_to_string( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_format_to_string( format );
+	OUTPUT:
+		RETVAL
+
+IV
+parse_sample_format( format_name )
+	const char *format_name
+	CODE:
+		RETVAL = pa_parse_sample_format( format_name );
+	OUTPUT:
+		RETVAL
+
+SV *
+bytes_sprint( bytes )
+	UV bytes
+	CODE:
+		SV *dest = newSV( PA_BYTES_SNPRINT_MAX );
+		char *d = SvPV_force( dest, PL_na );
+		pa_bytes_snprint( d, PA_BYTES_SNPRINT_MAX, bytes );
+		SvCUR_set( dest, strlen( d ) );
+		RETVAL = dest;
+	OUTPUT:
+		RETVAL
+
+IV
+sample_format_is_le( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_format_is_le( format );
+	OUTPUT:
+		RETVAL
+
+IV
+sample_format_is_be( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_format_is_be( format );
+	OUTPUT:
+		RETVAL
+
+IV
+sample_format_is_ne( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_format_is_ne( format );
+	OUTPUT:
+		RETVAL
+
+IV
+sample_format_is_re( format )
+	IV format
+	CODE:
+		RETVAL = pa_sample_format_is_re( format );
 	OUTPUT:
 		RETVAL
 

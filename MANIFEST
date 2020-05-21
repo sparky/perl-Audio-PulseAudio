@@ -1,3 +1,4 @@
+COPYING
 MANIFEST
 Makefile.PL
 examples/simple-low-pass-filter.pl
