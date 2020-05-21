@@ -155,6 +155,16 @@ Audio channels. (1 for mono, 2 for stereo, ...)
 
 =back
 
+=head2 $sample_spec = Audio::PulseAudio::SampleSpec->new_c( $format, $rate, $channels );
+
+Same, but without the argument names.
+
+=head2 $sample_spec = Audio::PulseAudio::SampleSpec->init();
+
+Create an empty sample specification.
+The sample spec will have a defined state but
+valid() will fail for it.
+
 =head1 METHODS
 
 =head2 $sample_spec->format( [NEW_VALUE] )

@@ -22,53 +22,43 @@ new_c( class, maxlength = -1, tlength = -1, prebuf = -1, minreq = -1, fragsize =
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 maxlength( self, ... )
 	pa_buffer_attr *self
 	CODE:
-		if ( items > 1 )
-			self->maxlength = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
-		RETVAL = self->maxlength;
+		PERL_PA_SET_GET_RETVAL( self->maxlength );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 tlength( self, ... )
 	pa_buffer_attr *self
 	CODE:
-		if ( items > 1 )
-			self->tlength = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
-		RETVAL = self->tlength;
+		PERL_PA_SET_GET_RETVAL( self->tlength );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 prebuf( self, ... )
 	pa_buffer_attr *self
 	CODE:
-		if ( items > 1 )
-			self->prebuf = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
-		RETVAL = self->prebuf;
+		PERL_PA_SET_GET_RETVAL( self->prebuf );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 minreq( self, ... )
 	pa_buffer_attr *self
 	CODE:
-		if ( items > 1 )
-			self->minreq = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
-		RETVAL = self->minreq;
+		PERL_PA_SET_GET_RETVAL( self->minreq );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 fragsize( self, ... )
 	pa_buffer_attr *self
 	CODE:
-		if ( items > 1 )
-			self->fragsize = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;
-		RETVAL = self->fragsize;
+		PERL_PA_SET_GET_RETVAL( self->fragsize );
 	OUTPUT:
 		RETVAL
 

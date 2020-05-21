@@ -1,8 +1,8 @@
 pa_simple*		T_PTROBJ
 pa_sample_spec*		T_DIRECT
 const pa_sample_spec*	T_DIRECT
-pa_channel_map*		T_PTROBJ
-const pa_channel_map*	T_PTROBJ
+pa_channel_map*		T_DIRECT
+const pa_channel_map*	T_DIRECT
 pa_buffer_attr*		T_DIRECT
 const pa_buffer_attr*	T_DIRECT
 

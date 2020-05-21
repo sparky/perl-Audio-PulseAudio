@@ -18,40 +18,43 @@ new_c( class, format, rate, channels )
 	OUTPUT:
 		RETVAL
 
-IV
+pa_sample_spec *
+init( class )
+	const char *class
+	CODE:
+		pa_sample_spec ss = { 0 };
+		RETVAL = pa_sample_spec_init( &ss );
+	OUTPUT:
+		RETVAL
+
+SV *
 format( self, ... )
 	pa_sample_spec *self 
 	CODE:
-		if ( items > 1 )
-			self->format = SvIV( ST(1) );
-		RETVAL = self->format;
+		PERL_PA_SET_GET_RETVAL( self->format );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 rate( self, ... )
 	pa_sample_spec *self 
 	CODE:
-		if ( items > 1 )
-			self->rate = SvUV( ST(1) );
-		RETVAL = self->rate;
+		PERL_PA_SET_GET_RETVAL( self->rate );
 	OUTPUT:
 		RETVAL
 
-UV
+SV *
 channels( self, ... )
 	pa_sample_spec *self 
 	CODE:
-		if ( items > 1 )
-			self->channels = SvUV( ST(1) );
-		RETVAL = self->channels;
+		PERL_PA_SET_GET_RETVAL( self->channels );
 	OUTPUT:
 		RETVAL
 
 
 UV
 bytes_per_second( self )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	CODE:
 		RETVAL = pa_bytes_per_second( self );
 	OUTPUT:
@@ -59,7 +62,7 @@ bytes_per_second( self )
 
 UV
 frame_size( self )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	CODE:
 		RETVAL = pa_frame_size( self );
 	OUTPUT:
@@ -67,7 +70,7 @@ frame_size( self )
 
 UV
 sample_size( self )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	CODE:
 		RETVAL = pa_sample_size( self );
 	OUTPUT:
@@ -75,7 +78,7 @@ sample_size( self )
 
 UV
 bytes_to_usec( self, len )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	UV len
 	CODE:
 		RETVAL = pa_bytes_to_usec( len, self );
@@ -84,7 +87,7 @@ bytes_to_usec( self, len )
 
 UV
 usec_to_bytes( self, time )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	UV time
 	CODE:
 		RETVAL = pa_usec_to_bytes( time, self );
@@ -93,7 +96,7 @@ usec_to_bytes( self, time )
 
 IV
 valid( self )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	CODE:
 		RETVAL = pa_sample_spec_valid( self );
 	OUTPUT:
@@ -101,8 +104,8 @@ valid( self )
 
 IV
 equal( self, other )
-	pa_sample_spec *self
-	pa_sample_spec *other
+	const pa_sample_spec *self
+	const pa_sample_spec *other
 	CODE:
 		RETVAL = pa_sample_spec_equal( self, other );
 	OUTPUT:
@@ -110,7 +113,7 @@ equal( self, other )
 
 SV *
 sprint( self )
-	pa_sample_spec *self
+	const pa_sample_spec *self
 	CODE:
 		SV *dest = newSV( PA_SAMPLE_SPEC_SNPRINT_MAX );
 		char *d = SvPV_force( dest, PL_na );

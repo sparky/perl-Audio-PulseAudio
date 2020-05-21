@@ -4,6 +4,13 @@
 
 #include "pulse/pulseaudio.h"
 
+#define PERL_PA_SET_GET_RETVAL( field ) 					\
+	STMT_START {								\
+		if ( items > 1 )						\
+			field = SvOK( ST(1) ) ? SvUV( ST(1) ) : -1;		\
+		RETVAL = (field == -1) ? &PL_sv_undef : newSVuv( field );	\
+	} STMT_END
+
 typedef struct
 {
 	IV iv;
@@ -29,4 +36,5 @@ BOOT:
 }
 
 INCLUDE: PulseAudio/BufferAttr.xsi
+INCLUDE: PulseAudio/ChannelMap.xsi
 INCLUDE: PulseAudio/SampleSpec.xsi

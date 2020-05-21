@@ -1,0 +1,267 @@
+MODULE = Audio::PulseAudio	PACKAGE = Audio::PulseAudio::ChannelMap
+
+PROTOTYPES: DISABLE
+
+pa_channel_map *
+new( class, ... )
+	const char *class
+	CODE:
+		unsigned int channels = items - 1;
+		if ( channels >= PA_CHANNELS_MAX )
+			croak( "Too many channels" );
+		pa_channel_map cm = { 0 };
+		pa_channel_map_init( &cm );
+		cm.channels = channels;
+		int i;
+		for ( i = 0; i < channels; i++ )
+			cm.map[ i ] = SvIV( ST(i+1) );
+		RETVAL = &cm;
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+init( class )
+	const char *class
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_init( &cm );
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+init_mono( class )
+	const char *class
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_init_mono( &cm );
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+init_stereo( class )
+	const char *class
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_init_stereo( &cm );
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+init_auto( class, channels, def )
+	const char *class
+	UV channels
+	int def
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_init_auto( &cm, channels, def );
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+init_extend( class, channels, def )
+	const char *class
+	UV channels
+	int def
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_init_extend( &cm, channels, def );
+	OUTPUT:
+		RETVAL
+
+pa_channel_map *
+parse( class, spec )
+	const char *class
+	const char *spec
+	CODE:
+		pa_channel_map cm = { 0 };
+		RETVAL = pa_channel_map_parse( &cm, spec );
+	OUTPUT:
+		RETVAL
+
+UV
+channels( self, ... )
+	pa_channel_map *self
+	CODE:
+		if ( items > 1 )
+		{
+			UV channels = SvIV( ST(1) );
+			if ( channels >= PA_CHANNELS_MAX )
+				croak( "Too many channels" );
+			self->channels = channels;
+		}
+		RETVAL = self->channels;
+	OUTPUT:
+		RETVAL
+
+void
+map( self, ... )
+	pa_channel_map *self
+	CODE:
+		UV channels = items - 1;
+		if ( channels >= PA_CHANNELS_MAX )
+			croak( "Too many channels" );
+		self->channels = channels;
+		int i;
+		for ( i = 0; i < channels; i++ )
+			self->map[ i ] = SvIV( ST(i+1) );
+		// TODO: return the map in list context
+
+SV *
+channel( self, channel_id, ... )
+	pa_channel_map *self
+	UV channel_id
+	CODE:
+		UV min_channels = channel_id + 1;
+		if ( min_channels >= PA_CHANNELS_MAX )
+			croak( "Too many channels" );
+		if ( items > 2 )
+		{
+			if ( min_channels < self->channels )
+				self->channels = min_channels;
+			self->map[ channel_id ] = SvIV( ST(2) );
+		}
+		RETVAL = ( min_channels < self->channels ? &PL_sv_undef : newSViv( self->map[ channel_id ] ) );
+	OUTPUT:
+		RETVAL
+		
+
+SV *
+valid( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = (pa_channel_map_valid( self ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+equal( self, other )
+	const pa_channel_map *self
+	const pa_channel_map *other
+	CODE:
+		RETVAL = (pa_channel_map_equal( self, other ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+sprint( self )
+	const pa_channel_map *self
+	CODE:
+		SV *dest = newSV( PA_CHANNEL_MAP_SNPRINT_MAX );
+		char *d = SvPV_force( dest, PL_na );
+		pa_channel_map_snprint( d, PA_CHANNEL_MAP_SNPRINT_MAX, self );
+		SvCUR_set( dest, strlen( d ) );
+		RETVAL = dest;
+	OUTPUT:
+		RETVAL
+
+SV *
+compatible( self, sample_spec )
+	const pa_channel_map *self
+	const pa_sample_spec *sample_spec
+	CODE:
+		RETVAL = (pa_channel_map_compatible( self, sample_spec ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+superset( self, subset )
+	const pa_channel_map *self
+	const pa_channel_map *subset
+	CODE:
+		RETVAL = (pa_channel_map_superset( self, subset ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+can_balance( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = (pa_channel_map_can_balance( self ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+can_fade( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = (pa_channel_map_can_fade( self ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+SV *
+can_lfe_balance( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = (pa_channel_map_can_lfe_balance( self ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+const char *
+to_name( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = pa_channel_map_to_name( self );
+	OUTPUT:
+		RETVAL
+	
+const char *
+to_pretty_name( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = pa_channel_map_to_pretty_name( self );
+	OUTPUT:
+		RETVAL
+
+SV *
+has_position( self, position )
+	const pa_channel_map *self
+	IV position
+	CODE:
+		RETVAL = (pa_channel_map_has_position( self, position ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+UV
+mask( self )
+	const pa_channel_map *self
+	CODE:
+		RETVAL = pa_channel_map_mask( self );
+	OUTPUT:
+		RETVAL
+
+
+PROTOTYPES: ENABLE
+
+const char *
+channel_position_to_string( position )
+	IV position
+	CODE:
+		RETVAL = pa_channel_position_to_string( position );
+	OUTPUT:
+		RETVAL
+
+IV
+channel_position_from_string( str )
+	const char *str
+	CODE:
+		RETVAL = pa_channel_position_from_string( str );
+	OUTPUT:
+		RETVAL
+
+const char *
+channel_position_to_pretty_string( position )
+	IV position
+	CODE:
+		RETVAL = pa_channel_position_to_pretty_string( position );
+	OUTPUT:
+		RETVAL
+
+UV
+channel_position_mask( position )
+	IV position
+	CODE:
+		RETVAL = PA_CHANNEL_POSITION_MASK( position );
+	OUTPUT:
+		RETVAL
+
+# vim: set ft=xs:
