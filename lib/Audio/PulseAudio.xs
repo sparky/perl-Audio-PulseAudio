@@ -35,6 +35,6 @@ BOOT:
 		newCONSTSUB( stash, const_iv[i].name, newSViv( const_iv[i].iv ) );
 }
 
-INCLUDE: PulseAudio/BufferAttr.xsi
-INCLUDE: PulseAudio/ChannelMap.xsi
-INCLUDE: PulseAudio/SampleSpec.xsi
+INCLUDE: PulseAudio/BufferAttr.xs#
+INCLUDE: PulseAudio/ChannelMap.xs#
+INCLUDE: PulseAudio/SampleSpec.xs#

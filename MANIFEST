@@ -7,11 +7,11 @@ h_extract
 lib/Audio/PulseAudio.pm
 lib/Audio/PulseAudio.xs
 lib/Audio/PulseAudio/BufferAttr.pm
-lib/Audio/PulseAudio/BufferAttr.xsi
+lib/Audio/PulseAudio/BufferAttr.xs#
 lib/Audio/PulseAudio/ChannelMap.pm
-lib/Audio/PulseAudio/ChannelMap.xsi
+lib/Audio/PulseAudio/ChannelMap.xs#
 lib/Audio/PulseAudio/SampleSpec.pm
-lib/Audio/PulseAudio/SampleSpec.xsi
+lib/Audio/PulseAudio/SampleSpec.xs#
 lib/Audio/PulseAudio/Simple.pm
 lib/Audio/PulseAudio/Simple.xs
 typemap
