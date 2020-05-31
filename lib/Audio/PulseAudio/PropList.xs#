@@ -1,0 +1,273 @@
+MODULE = Audio::PulseAudio	PACKAGE = Audio::PulseAudio::PropList
+
+PROTOTYPES: DISABLE
+
+pa_proplist *
+new( class, ... )
+	const char *class
+	CODE:
+		size_t count = items - 1;
+		if ( count & 1 )
+			croak( "We expected an even number of arguments, it is %ld", count );
+		RETVAL = pa_proplist_new();
+		int i;
+		for ( i = 0; i < count; i += 2 )
+		{
+			STRLEN key_len;
+			const char *key = SvPV( ST( i+1 ), key_len );
+			STRLEN value_len;
+			const char *value = SvPV( ST( i+2 ), value_len );
+			int error;
+			if ( key_len > 5 && strcmp( ".icon", key + key_len - 5 ) == 0 )
+				error = pa_proplist_set( RETVAL, key, value, value_len );
+			else
+				error = pa_proplist_sets( RETVAL, key, value );
+			if ( error )
+			{
+				pa_proplist_free( RETVAL );
+				croak( "Could not set key <%s>", key );
+			}
+		}
+	OUTPUT:
+		RETVAL
+
+pa_proplist *
+from_string( class, str )
+	const char *class
+	const char *str
+	CODE:
+		RETVAL = pa_proplist_from_string( str );
+		if ( !RETVAL )
+			croak( "Cannot initialise from string: %s", str );
+	OUTPUT:
+		RETVAL
+
+pa_proplist *
+copy( self )
+	SV *self
+	CODE:
+		HV *stash = SvSTASH( SvRV( self ) );
+		const char *class = HvNAME( stash );
+		const pa_proplist *from = (const pa_proplist*) ( SvROK(self) ? (void *)SvIV( SvRV( self ) ) : NULL );
+		RETVAL = pa_proplist_copy( from );
+	OUTPUT:
+		RETVAL
+
+void
+sets( self, ... )
+	pa_proplist *self
+	CODE:
+		size_t count = items - 1;
+		if ( count & 1 )
+			croak( "We expected an even number of arguments, it is %ld", count );
+
+		int i;
+		for ( i = 0; i < count; i += 2 )
+		{
+			const char *key = SvPV_nolen( ST( i+1 ) );
+			const char *value = SvPV_nolen( ST( i+2 ) );
+			int error = pa_proplist_sets( self, key, value );
+			if ( error )
+				croak( "Could not set key %s: %s", key, pa_strerror( error ) );
+		}
+
+void
+setp( self, ... )
+	pa_proplist *self
+	CODE:
+		int i;
+		for ( i = 1; i < items; i++ )
+		{
+			const char *key_value = SvPV_nolen( ST( i ) );
+			int error = pa_proplist_setp( self, key_value );
+			if ( error )
+				croak( "Could not set key-value %s: %s", key_value, pa_strerror( error ) );
+		}
+
+void
+set( self, ... )
+	pa_proplist *self
+	CODE:
+		size_t count = items - 1;
+		if ( count & 1 )
+			croak( "We expected an even number of arguments, it is %ld", count );
+
+		int i;
+		for ( i = 0; i < count; i += 2 )
+		{
+			const char *key = SvPV_nolen( ST( i+1 ) );
+			STRLEN value_len;
+			const char *value = SvPV( ST( i+2 ), value_len );
+			int error = pa_proplist_set( self, key, value, value_len );
+			if ( error )
+				croak( "Could not set key %s: %s", key, pa_strerror( error ) );
+		}
+
+void
+gets( self, ... )
+	const pa_proplist *self
+	PPCODE:
+		int i;
+		for ( i = 1; i < items; i++ )
+		{
+			const char *key = SvPV_nolen( ST(i) );
+			const char *data = pa_proplist_gets( self, key );
+			ST( i-1 ) = data ? sv_2mortal( newSVpv( data, 0 ) ) : &PL_sv_undef;
+		}
+		XSRETURN( items - 1 );
+
+void
+get( self, ... )
+	const pa_proplist *self
+	PPCODE:
+		int i;
+		for ( i = 1; i < items; i++ )
+		{
+			const char *key = SvPV_nolen( ST(i) );
+			const void *data;
+			size_t nbytes;
+			int error = pa_proplist_get( self, key, &data, &nbytes );
+			if ( error )
+				croak( "error while getting: %d", error );
+			ST( i-1 ) = sv_2mortal( newSVpvn( data, nbytes ) );
+		}
+		XSRETURN( items - 1 );
+
+void
+unset( self, ... )
+	pa_proplist *self
+	CODE:
+		size_t count = items - 1;
+		int error = 0;
+		if ( count == 1 )
+		{
+			const char *key = SvPV_nolen( ST(1) );
+			error = pa_proplist_unset( self, key );
+		}
+		else
+		{
+			int i;
+			const char *keys[count + 1];
+			keys[count] = NULL;
+			for ( i = 0; i < count; i++ )
+				keys[ i ] = SvPV_nolen( ST(i+1) );
+
+			error = pa_proplist_unset_many( self, keys );
+		}
+		if ( error )
+			croak( "Coult not unset" );
+
+const char *
+iterate( self, state )
+	const pa_proplist *self
+	SV *state
+	CODE:
+		void *s = NULL;
+		if ( SvIOK( state ) )
+			s = (void *)SvIV( state );
+		RETVAL = pa_proplist_iterate( self, &s );
+		sv_setiv( state, (IV)s );
+	OUTPUT:
+		RETVAL
+
+void
+keys( self )
+	const pa_proplist *self
+	PPCODE:
+		void *state = NULL;
+		const char *key;
+		while ( (key = pa_proplist_iterate( self, &state )) != NULL )
+		{
+			// Push onto the stack. Calls sv_2mortal internally
+			mXPUSHs( newSVpv( key, 0 ) );
+		}
+
+void
+update( self, mode, other )
+	pa_proplist *self
+	IV mode
+	const pa_proplist *other
+	CODE:
+		pa_proplist_update( self, mode, other );
+
+SV *
+to_string( self )
+	const pa_proplist *self
+	CODE:
+		char *ret = pa_proplist_to_string( self );
+		RETVAL = newSVpv( ret, 0 );
+		pa_xfree( ret );
+	OUTPUT:
+		RETVAL
+
+SV *
+to_string_sep( self, sep )
+	const pa_proplist *self
+	const char *sep
+	CODE:
+		char *ret = pa_proplist_to_string_sep( self, sep );
+		RETVAL = newSVpv( ret, 0 );
+		pa_xfree( ret );
+	OUTPUT:
+		RETVAL
+
+SV *
+contains( self, key )
+	const pa_proplist *self
+	const char *key
+	CODE:
+		int ret = pa_proplist_contains( self, key );
+		if ( ret < 0 )
+			croak( "error in contains" );
+		RETVAL = ( ret ? &PL_sv_yes : &PL_sv_no );
+	OUTPUT:
+		RETVAL
+
+void
+clear( self )
+	pa_proplist *self
+	CODE:
+		pa_proplist_clear( self );
+
+UV
+size( self )
+	const pa_proplist *self
+	CODE:
+		RETVAL = pa_proplist_size( self );
+	OUTPUT:
+		RETVAL
+
+SV *
+isempty( self )
+	const pa_proplist *self
+	CODE:
+		RETVAL = ( pa_proplist_isempty( self ) ? &PL_sv_yes : &PL_sv_no );
+	OUTPUT:
+		RETVAL
+
+SV *
+equal( self, other )
+	const pa_proplist *self
+	const pa_proplist *other
+	CODE:
+		RETVAL = ( pa_proplist_equal( self, other ) ? &PL_sv_yes : &PL_sv_no );
+	OUTPUT:
+		RETVAL
+
+void
+DESTROY( self )
+	pa_proplist *self
+	CODE:
+		pa_proplist_free( self );
+
+PROTOTYPES: ENABLE
+
+SV *
+key_valid( key )
+	const char *key
+	CODE:
+		RETVAL = (pa_proplist_key_valid( key ) ? &PL_sv_yes : &PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+# vim: set ft=xs:

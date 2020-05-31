@@ -219,6 +219,9 @@ Pretty print a sample type specification to a string. Returns a string.
 
 =head1 FUNCTIONS
 
+None of the functions are exported. You should call them with fully qualified
+names.
+
 =head2 $bytes = sample_size_of_format( $format )
 
 Similar to sample_size() but take a sample format instead of a

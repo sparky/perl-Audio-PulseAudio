@@ -301,6 +301,9 @@ Generates a bit mask from a channel map.
 
 =head1 FUNCTIONS
 
+None of the functions are exported. You should call them with fully qualified
+names.
+
 =head2 $position_name = channel_position_to_string( $position )
 
 Return a text label for the specified channel position.

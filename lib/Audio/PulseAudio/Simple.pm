@@ -92,8 +92,7 @@ Name of your application to advertise to the server.
 
 Stream direction, one of:
 C<Audio::PulseAudio::STREAM_PLAYBACK>,
-C<Audio::PulseAudio::STREAM_RECORD>,
-C<Audio::PulseAudio::STREAM_UPLOAD>.
+C<Audio::PulseAudio::STREAM_RECORD>.
 
 =item device
 

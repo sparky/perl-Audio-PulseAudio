@@ -5,6 +5,8 @@ pa_channel_map*		T_DIRECT
 const pa_channel_map*	T_DIRECT
 pa_buffer_attr*		T_DIRECT
 const pa_buffer_attr*	T_DIRECT
+pa_proplist*		T_PTROBJ
+const pa_proplist*	T_PTROBJ
 
 uint32_t		T_UV_MINUS
 

@@ -120,7 +120,6 @@ Does the same thing, but in a less convenient manner.
 
 =head1 METHODS
 
-
 =head2 $buffer_attr->maxlength( [NEW_VALUE] );
 
 Get or set the C<maxlength> value.
